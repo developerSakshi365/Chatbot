@@ -21,7 +21,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-        "https://chatbot-git-main-sakshis-projects-110cae2b.vercel.app"
+        "https://chatbot-woad-one.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
