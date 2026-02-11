@@ -1,6 +1,7 @@
 // ChatBox.jsx
 import { useState, useEffect, useRef, useCallback } from "react";
 import "../styles/ChatBox.css";
+import "../styles/responsive.css";
 
 const API_URL = process.env.REACT_APP_API_URL;
 

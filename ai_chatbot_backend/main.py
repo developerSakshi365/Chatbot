@@ -14,6 +14,7 @@ from auth import (
 conversation_memory = {}
 
 app = FastAPI()
+dir
 
 # ---------- CORS (VERY IMPORTANT FOR REACT) ----------
 app.add_middleware(

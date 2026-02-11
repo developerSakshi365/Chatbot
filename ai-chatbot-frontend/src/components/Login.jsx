@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import "../styles/Login.css";
+import "../styles/responsive.css";
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 const API_URL = process.env.REACT_APP_API_URL;
