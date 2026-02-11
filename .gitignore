@@ -1,0 +1,56 @@
+########################################
+# BACKEND (FastAPI / Python)
+########################################
+
+# Virtual Environment
+ai_chatbot_backend/.venv/
+ai_chatbot_backend/venv/
+ai_chatbot_backend/env/
+
+# Python cache
+ai_chatbot_backend/__pycache__/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Database
+ai_chatbot_backend/*.db
+ai_chatbot_backend/*.sqlite3
+
+# Environment files
+ai_chatbot_backend/.env
+
+
+########################################
+# FRONTEND (React)
+########################################
+
+# Node modules
+ai-chatbot-frontend/node_modules/
+
+# Production build
+ai-chatbot-frontend/build/
+ai-chatbot-frontend/dist/
+
+# Environment files
+ai-chatbot-frontend/.env
+
+
+########################################
+# Logs
+########################################
+*.log
+
+########################################
+# IDE / Editor files
+########################################
+.vscode/
+.idea/
+*.swp
+
+########################################
+# OS Files
+########################################
+.DS_Store
+Thumbs.db
