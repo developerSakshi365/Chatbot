@@ -1,6 +1,8 @@
 // ChatBox.jsx
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import "../styles/ChatBox.css";
+
+const API_URL = process.env.REACT_APP_API_URL;
 
 function ChatBox({ user, onLogout }) {
   const [message, setMessage] = useState("");
@@ -27,30 +29,29 @@ function ChatBox({ user, onLogout }) {
     }
   }, [chat, loading]);
 
-  // Save current chat to history when it has messages
-  useEffect(() => {
-    if (chat.length > 0 && !activeChatId) {
-      // This is a new chat, create a history entry after first message
-      const firstUserMessage = chat.find(msg => msg.sender === 'user');
-      if (firstUserMessage && chatHistory.length === 0) {
-        saveCurrentChatToHistory(firstUserMessage.text);
-      }
-    }
-  }, [chat]);
-
-  const saveCurrentChatToHistory = (title) => {
+  const saveCurrentChatToHistory = useCallback((title, currentChat, currentHistory) => {
     const newChat = {
       id: Date.now(),
       title: title.substring(0, 30) + (title.length > 30 ? '...' : ''),
-      messages: chat,
+      messages: currentChat,
       timestamp: new Date().toISOString()
     };
 
-    const updatedHistory = [newChat, ...chatHistory];
+    const updatedHistory = [newChat, ...currentHistory];
     setChatHistory(updatedHistory);
     localStorage.setItem('chatHistory', JSON.stringify(updatedHistory));
     setActiveChatId(newChat.id);
-  };
+  }, []);
+
+  // Save current chat to history when it has messages
+  useEffect(() => {
+    if (chat.length > 0 && !activeChatId) {
+      const firstUserMessage = chat.find(msg => msg.sender === 'user');
+      if (firstUserMessage && chatHistory.length === 0) {
+        saveCurrentChatToHistory(firstUserMessage.text, chat, chatHistory);
+      }
+    }
+  }, [chat, activeChatId, chatHistory, saveCurrentChatToHistory]);
 
   const sendMessage = async () => {
     if (!message.trim()) return;
@@ -62,18 +63,16 @@ function ChatBox({ user, onLogout }) {
     setLoading(true);
     setMessage("");
 
-    // If this is the first message and no active chat, it will be saved by useEffect
-    
     try {
-      const response = await fetch("http://127.0.0.1:8000/chat", {
+      const response = await fetch(`${API_URL}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMessage })
       });
-if (!response.ok) {
-  throw new Error("Server error");
-}
-const data = await response.json();
+      if (!response.ok) {
+        throw new Error("Server error");
+      }
+      const data = await response.json();
       
       const botMessage = { sender: "bot", text: data.reply };
       setChat(prev => {
@@ -103,11 +102,13 @@ const data = await response.json();
   };
 
   const updateChatHistory = (chatId, updatedMessages) => {
-    const updatedHistory = chatHistory.map(c => 
-      c.id === chatId ? { ...c, messages: updatedMessages } : c
-    );
-    setChatHistory(updatedHistory);
-    localStorage.setItem('chatHistory', JSON.stringify(updatedHistory));
+    setChatHistory(prev => {
+      const updatedHistory = prev.map(c => 
+        c.id === chatId ? { ...c, messages: updatedMessages } : c
+      );
+      localStorage.setItem('chatHistory', JSON.stringify(updatedHistory));
+      return updatedHistory;
+    });
   };
 
   const startNewChat = () => {
@@ -115,7 +116,7 @@ const data = await response.json();
     if (chat.length > 0 && !activeChatId) {
       const firstUserMessage = chat.find(msg => msg.sender === 'user');
       if (firstUserMessage) {
-        saveCurrentChatToHistory(firstUserMessage.text);
+        saveCurrentChatToHistory(firstUserMessage.text, chat, chatHistory);
       }
     }
     

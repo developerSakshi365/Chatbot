@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import "../styles/Login.css";
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+const API_URL = process.env.REACT_APP_API_URL;
 
 function Login({ onLogin }) {
   const [isLogin, setIsLogin] = useState(true);
@@ -11,6 +12,32 @@ function Login({ onLogin }) {
     name: ""
   });
   const [loading, setLoading] = useState(false);
+
+  const handleGoogleLogin = useCallback(async (response) => {
+    setLoading(true);
+
+    try {
+      const res = await fetch(`${API_URL}/google-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: response.credential })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert("Google login failed");
+        return;
+      }
+
+      localStorage.setItem("user", JSON.stringify(data));
+      onLogin(data);
+    } catch (err) {
+      alert("Google login error");
+    } finally {
+      setLoading(false);
+    }
+  }, [onLogin]);
 
   useEffect(() => {
     if (!GOOGLE_CLIENT_ID) {
@@ -41,7 +68,7 @@ function Login({ onLogin }) {
     }, 300);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [handleGoogleLogin]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,7 +77,7 @@ function Login({ onLogin }) {
     const endpoint = isLogin ? "login" : "signup";
 
     try {
-      const res = await fetch(`http://127.0.0.1:8000/${endpoint}`, {
+      const res = await fetch(`${API_URL}/${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
@@ -71,32 +98,6 @@ function Login({ onLogin }) {
       setLoading(false);
     }
   };
-
-  async function handleGoogleLogin(response) {
-    setLoading(true);
-
-    try {
-      const res = await fetch("http://127.0.0.1:8000/google-login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: response.credential })
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        alert("Google login failed");
-        return;
-      }
-
-      localStorage.setItem("user", JSON.stringify(data));
-      onLogin(data);
-    } catch (err) {
-      alert("Google login error");
-    } finally {
-      setLoading(false);
-    }
-  }
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
