@@ -7,9 +7,9 @@ This project is an AI-powered Customer Support Chatbot developed to assist users
 The system is designed to automate customer interactions and provide instant responses efficiently.
 
 🔗 **Live Demo:**  
-You can access the deployed project here:  
- LINK - https://chatbot-woad-one.vercel.app/
----
+## You can access the deployed project here:  
+LINK - https://chatbot-woad-one.vercel.app/
+
 
 ## 🚀 Features
 
