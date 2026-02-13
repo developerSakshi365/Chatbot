@@ -9,7 +9,7 @@ function ChatBox({ user, onLogout }) {
   const [message, setMessage] = useState("");
   const [chat, setChat] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
   const [activeChatId, setActiveChatId] = useState(null);
   const [theme, setTheme] = useState('dark');
@@ -21,6 +21,19 @@ function ChatBox({ user, onLogout }) {
     if (savedHistory) {
       setChatHistory(JSON.parse(savedHistory));
     }
+    
+    // Set sidebar open by default on desktop
+    const handleResize = () => {
+      if (window.innerWidth > 768) {
+        setSidebarOpen(true);
+      } else {
+        setSidebarOpen(false);
+      }
+    };
+    
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Auto scroll to bottom when new messages arrive
@@ -124,6 +137,11 @@ function ChatBox({ user, onLogout }) {
     setChat([]);
     setActiveChatId(null);
     setMessage("");
+    
+    // Close sidebar on mobile after creating new chat
+    if (window.innerWidth <= 768) {
+      setSidebarOpen(false);
+    }
   };
 
   const loadChatHistory = (chatId) => {
@@ -131,6 +149,11 @@ function ChatBox({ user, onLogout }) {
     if (selectedChat) {
       setChat(selectedChat.messages);
       setActiveChatId(chatId);
+      
+      // Close sidebar on mobile after selecting chat
+      if (window.innerWidth <= 768) {
+        setSidebarOpen(false);
+      }
     }
   };
 
@@ -150,6 +173,10 @@ function ChatBox({ user, onLogout }) {
     setSidebarOpen(!sidebarOpen);
   };
 
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+  };
+
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
@@ -165,6 +192,12 @@ function ChatBox({ user, onLogout }) {
       {/* Sidebar */}
       <div className={`sidebar ${!sidebarOpen ? 'closed' : ''}`}>
         <div className="sidebar-header">
+          <div className="sidebar-header-top">
+            <h2 className="sidebar-title">Chats</h2>
+            <button className="close-sidebar-btn" onClick={closeSidebar} aria-label="Close sidebar">
+              ✕
+            </button>
+          </div>
           <button className="new-chat-btn" onClick={startNewChat}>
             New Chat
           </button>
@@ -184,6 +217,7 @@ function ChatBox({ user, onLogout }) {
                 <button 
                   className="delete-chat-btn"
                   onClick={(e) => deleteChatHistory(chatItem.id, e)}
+                  aria-label="Delete chat"
                 >
                   🗑️
                 </button>
@@ -210,14 +244,19 @@ function ChatBox({ user, onLogout }) {
         </div>
       </div>
 
+      {/* Overlay for mobile when sidebar is open */}
+      {sidebarOpen && (
+        <div className="sidebar-overlay" onClick={closeSidebar}></div>
+      )}
+
       {/* Main Chat Area */}
       <div className="main-chat">
         <div className="chat-header">
-          <button className="toggle-sidebar-btn" onClick={toggleSidebar}>
+          <button className="toggle-sidebar-btn" onClick={toggleSidebar} aria-label="Toggle sidebar">
             ☰
           </button>
           <h1 className="chat-title">ChatBot AI</h1>
-          <button className="theme-toggle-btn" onClick={toggleTheme}>
+          <button className="theme-toggle-btn" onClick={toggleTheme} aria-label="Toggle theme">
             {theme === 'dark' ? '☀️' : '🌙'}
           </button>
         </div>
@@ -231,11 +270,11 @@ function ChatBox({ user, onLogout }) {
                 <div className="example-prompt" onClick={() => setMessage("What can you help me with?")}>
                   "What can you help me with?"
                 </div>
-                <div className="example-prompt" onClick={() => setMessage("Tell me a fun fact")}>
-                  "Tell me a fun fact"
+                <div className="example-prompt" onClick={() => setMessage("Do you offer international shipping?")}>
+                  "Do you offer international shipping?"
                 </div>
-                <div className="example-prompt" onClick={() => setMessage("Explain quantum computing")}>
-                  "Explain quantum computing"
+                <div className="example-prompt" onClick={() => setMessage("I want a refund")}>
+                  "I want a refund"
                 </div>
               </div>
             </div>

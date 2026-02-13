@@ -11,7 +11,7 @@ function Login({ onLogin }) {
     email: "",
     password: "",
     name: ""
-  });
+  }); 
   const [loading, setLoading] = useState(false);
 
   const handleGoogleLogin = useCallback(async (response) => {
