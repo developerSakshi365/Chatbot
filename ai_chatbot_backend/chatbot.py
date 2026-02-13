@@ -2,16 +2,8 @@
 
 def get_bot_response(user_message, conversation_history=None):
     """
-    Generates a contextual chatbot response based on the user's message
-    and previous conversation history.
-
-    Args:
-        user_message (str): The current message sent by the user.
-        conversation_history (list): Previous messages in the conversation
-        in the format [{"role": "user/bot", "content": "..."}].
-
-    Returns:
-        str: Context-aware chatbot response.
+    Customer Support / FAQ Chatbot
+    Provides contextual responses for support-related queries.
     """
 
     user_message_lower = user_message.lower().strip()
@@ -29,81 +21,120 @@ def get_bot_response(user_message, conversation_history=None):
             if last_user_message and last_bot_message:
                 break
 
-    # Follow-up handling
-    if user_message_lower in ["ok", "okay", "hmm", "huh"]:
-        return "Alright 🙂 If you have a question or want to know something, just ask."
+    # ---------------- GREETINGS ----------------
 
-    if user_message_lower in ["no", "nah"]:
-        return "No problem 👍 Let me know whenever you need help."
+    if any(word in user_message_lower for word in ["hello", "hi", "hey"]):
+        return "Hello 👋 Welcome to Customer Support. How can I assist you today?"
 
-    if user_message_lower in ["yes", "yeah", "yep"]:
-        if last_bot_message and "help" in last_bot_message:
-            return "Great! You can ask me about technology, fun facts, time, or general questions."
-        return "Awesome 😊 What would you like to talk about?"
+    if "how are you" in user_message_lower:
+        return "I'm here and ready to assist you 😊 How may I help you today?"
 
-    if user_message_lower in ["what", "why", "how"]:
-        return "Could you please ask a complete question? That will help me understand better 🙂"
+    if any(word in user_message_lower for word in ["bye", "goodbye"]):
+        return "Thank you for contacting support. Have a great day! 👋"
 
-    # ---------------- RULE-BASED RESPONSES ----------------
+    # ---------------- ORDER SUPPORT ----------------
 
-    if any(word in user_message_lower for word in ["hello", "hi", "hey", "greetings"]):
-        return "Hello! How can I assist you today?"
-
-    elif "how are you" in user_message_lower:
-        return "I'm doing great 😄 Thanks for asking! How can I help you today?"
-
-    elif any(word in user_message_lower for word in ["bye", "goodbye", "see you"]):
-        return "Goodbye! Have a great day 👋"
-
-    elif "help" in user_message_lower or "what can you do" in user_message_lower:
+    if "track" in user_message_lower or "order status" in user_message_lower:
         return (
-            "I can help with explanations, fun facts, time & date, "
-            "technology topics, and general questions. Would you like some help?"
+            "Sure 📦 Please provide your Order ID so I can help you track your order."
         )
 
-    elif user_message_lower.startswith("what is"):
-        topic = user_message_lower.replace("what is", "").strip()
+    if "order id" in user_message_lower:
         return (
-            f"{topic.capitalize()} is an interesting topic. "
-            f"I can explain it in simple terms or in detail—just tell me 😊"
+            "Thank you for providing your Order ID. "
+            "Your order is currently being processed and will be shipped within 24-48 hours."
         )
 
-    elif "quantum" in user_message_lower:
+    if "cancel order" in user_message_lower:
         return (
-            "Quantum computing uses principles like superposition and entanglement "
-            "to solve certain problems faster than classical computers."
+            "I can help you cancel your order. "
+            "Please provide your Order ID. Orders can only be canceled before shipping."
         )
 
-    elif "fun fact" in user_message_lower or "fact" in user_message_lower:
-        import random
-        facts = [
-            "Honey never spoils.",
-            "Octopuses have three hearts.",
-            "A day on Venus is longer than its year.",
-            "Bananas are berries, strawberries are not.",
-            "The shortest war in history lasted only 38 minutes."
-        ]
-        return random.choice(facts)
+    # ---------------- SHIPPING ----------------
 
-    elif "your name" in user_message_lower or "who are you" in user_message_lower:
-        return "I'm ChatBot AI 🤖, here to chat with you and help answer your questions."
-
-    elif "time" in user_message_lower or "date" in user_message_lower:
-        from datetime import datetime
-        now = datetime.now()
-        return now.strftime("Today is %B %d, %Y and the time is %I:%M %p")
-
-    elif "thank" in user_message_lower:
-        return "You're welcome! 😊 Happy to help."
-
-    # ---------------- CONTEXTUAL FALLBACK ----------------
-
-    if last_user_message and last_user_message != user_message_lower:
+    if "shipping" in user_message_lower or "delivery time" in user_message_lower:
         return (
-            f"You earlier mentioned '{last_user_message}'. "
-            f"Could you tell me what exactly you want to know about it?"
+            "🚚 Standard delivery takes 3-5 business days. "
+            "Express delivery takes 1-2 business days."
         )
+
+    if "international shipping" in user_message_lower:
+        return (
+            "🌍 Yes, we offer international shipping. "
+            "Delivery times vary depending on your country."
+        )
+
+    # ---------------- RETURNS & REFUNDS ----------------
+
+    if "refund" in user_message_lower:
+        return (
+            "💰 Refunds are processed within 5-7 business days after we receive the returned item."
+        )
+
+    if "return policy" in user_message_lower:
+        return (
+            "🔄 You can return products within 30 days of purchase. "
+            "Items must be unused and in original packaging."
+        )
+
+    # ---------------- ACCOUNT SUPPORT ----------------
+
+    if "reset password" in user_message_lower or "forgot password" in user_message_lower:
+        return (
+            "🔐 To reset your password, click on 'Forgot Password' on the login page "
+            "and follow the instructions sent to your email."
+        )
+
+    if "update email" in user_message_lower:
+        return (
+            "📧 To update your email address, go to Account Settings > Personal Information."
+        )
+
+    if "delete account" in user_message_lower:
+        return (
+            "⚠️ We're sorry to see you go. Please contact our support team at support@example.com "
+            "to request account deletion."
+        )
+
+    # ---------------- PAYMENT ----------------
+
+    if "payment methods" in user_message_lower:
+        return (
+            "💳 We accept Credit/Debit Cards, UPI, Net Banking, and PayPal."
+        )
+
+    if "payment failed" in user_message_lower:
+        return (
+            "If your payment failed, please check your bank balance or try another payment method."
+        )
+
+    # ---------------- FAQ GENERIC ----------------
+
+    if "help" in user_message_lower or "what can you do" in user_message_lower:
+        return (
+            "I can assist with:\n"
+            "• Order tracking\n"
+            "• Shipping information\n"
+            "• Returns & refunds\n"
+            "• Account issues\n"
+            "• Payment support\n\n"
+            "How can I help you today?"
+        )
+
+    # ---------------- CONTEXTUAL FOLLOW-UP ----------------
+
+    if user_message_lower in ["yes", "okay", "ok"]:
+        if last_bot_message:
+            return "Sure 🙂 Could you please provide more details so I can assist you better?"
+        return "Alright 🙂 How can I assist you further?"
+
+    if user_message_lower in ["no", "not really"]:
+        return "No problem 😊 Let me know if you need anything else."
+
+    # ---------------- DEFAULT RESPONSE ----------------
 
     return (
-        "I’m still learning 🤖 Could you please rephrase or ask a complete question?"
+        "I'm sorry, I didn't fully understand your request. "
+        "Could you please provide more details so I can assist you better?"
     )
