@@ -8,8 +8,7 @@ The system is designed to automate customer interactions and provide instant res
 
 🔗 **Live Demo:**  
 You can access the deployed project here:  
-👉 [Live Project Link Here]
-
+ LINK - https://chatbot-woad-one.vercel.app/
 ---
 
 ## 🚀 Features
@@ -64,13 +63,16 @@ CHATBOT/
 ### Step 1 – Clone the Repository
 ```bash
 git clone https://github.com/developerSakshi365/Chatbot.git
-
-Step 2 – Run Backend
+```
+### Step 2 – Run Backend
+```bash
 cd ai_chatbot_backend
 pip install -r requirements.txt
 uvicorn main:app --reload
+```
 
-Step 3 – Run Frontend
+### Step 3 – Run Frontend
+```bash
 cd ai-chatbot-frontend
 npm install
 npm start
